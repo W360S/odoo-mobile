@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View,
+import { StyleSheet, View,
   TextInput,
-  Button,
   WebView,
   KeyboardAvoidingView,
   ImageBackground } from 'react-native'
+
+  import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 
 export default class Login extends Component {
 
@@ -16,12 +17,16 @@ export default class Login extends Component {
       password: '',
       error: '',
       behavior: 'padding',
-      session_id: ''
+      session_id: '',
+      id: '',
+      ranDomId: '',
     }
+    this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
   }
 
   login = () => {
-    fetch('http://w360s.com.vn/web/session/authenticate', {
+    let db = this.state.username.substring(email.lastIndexOf("@") + 1)
+    fetch('http://' + this.state.domainName + '/web/session/authenticate', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -31,12 +36,12 @@ export default class Login extends Component {
         jsonrpc: "2.0",
         method: "call",
         params: {
-          db: "w360s.com.vn",
+          db: db,
           login: "nguyenpap@w360s.com",
           password: "P@ssword123",
           context: {}
         },
-        id: "1234"
+        id: this.state.ranDomId + ""
       })
     })
     .then((response) => response.json())
@@ -52,7 +57,7 @@ export default class Login extends Component {
       });
     })
     .catch((error) => {
-      console.error(error)
+      // console.error(error)
     });
     // if (this.state.domainName === '' || this.state.username === '' || this.state.password === '') {
 
@@ -65,11 +70,68 @@ export default class Login extends Component {
     // }
   }
 
+  checkDomainName = (domainName) => {
+    fetch('http://' + this.state.domainName + '/web/webclient/version_info', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        method: "call",
+        params: {
+          context: {}
+        },
+        id: this.state.ranDomId + ""
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+
+    })
+    .catch((error) => {
+
+    })
+  }
+
   render() {
     return (
       <ImageBackground style={styles.wrapper} source={require('../../../images/background-landscape.png')}>
-      
-        <KeyboardAvoidingView behavior={this.state.behavior} style={styles.container}>
+        
+        <Container>
+            <Content>
+                <Form>
+                    <Item floatingLabel style={styles.inputTextWrapper}>
+                      <Label>Company Domain Name</Label>
+                      <Input autoCapitalize={'none'}
+                          autoCorrect={false}
+                          onBlur={(domainName) => this.checkDomainName(domainName)}
+                          onChangeText={(domainName) => this.setState({domainName})}
+                          value={this.state.domainName}/>
+                    </Item>
+                    <Item floatingLabel style={styles.inputTextWrapper}>
+                        <Label>Username</Label>
+                        <Input autoCapitalize={'none'}
+                            autoCorrect={false}
+                            onChangeText={(username) => this.setState({username})}
+                            value={this.state.username}/>
+                    </Item>
+                    <Item floatingLabel style={styles.inputTextWrapper}>
+                        <Label>Password</Label>
+                        <Input secureTextEntry={true} 
+                            onChangeText={(password) => this.setState({password})}
+                            value={this.state.password}/>
+                    </Item>
+                    <Button full primary style={styles.buttonContainer}
+                        onPress={() => this.login()}>
+                        <Text>LOGIN</Text>
+                    </Button>
+                </Form>
+            </Content>
+        </Container>
+
+        {/* <KeyboardAvoidingView behavior={this.state.behavior} style={styles.container}>
           <View
             style={{
               marginTop: 40,
@@ -110,7 +172,7 @@ export default class Login extends Component {
               title="Login"
               onPress={() => this.login()}/>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView> */}
       
       </ImageBackground>
     );
