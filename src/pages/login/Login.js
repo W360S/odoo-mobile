@@ -37,8 +37,8 @@ export default class Login extends Component {
         method: "call",
         params: {
           db: db,
-          login: "nguyenpap@w360s.com",
-          password: "P@ssword123",
+          login: this.state.username,
+          password: this.state.password,
           context: {}
         },
         id: this.state.ranDomId + ""
@@ -106,8 +106,8 @@ export default class Login extends Component {
                       <Label>Company Domain Name</Label>
                       <Input autoCapitalize={'none'}
                           autoCorrect={false}
-                          onBlur={(domainName) => this.checkDomainName(domainName)}
-                          onChangeText={(domainName) => this.setState({domainName})}
+                          // onBlur={(domainName) => this.checkDomainName(domainName)}
+                          // onChangeText={(domainName) => this.setState({domainName})}
                           value={this.state.domainName}/>
                     </Item>
                     <Item floatingLabel style={styles.inputTextWrapper}>

@@ -11,20 +11,20 @@ export default class Home extends Component {
   }
 
   onNavigationStateChange(navState) { 
-    // let domain = 'http://' + this.props.domainName + '/web';
-    // if (navState.url == (domain + '/logout/session')) {
-    //     this.backToLogin()
-    //     this.setState({url: ''})
-    // } else if (navState.url == (domain + '/login#home')) { 
-    //   navState.url = domain + '#home'
-    // }
+    let domain = 'http://' + this.props.domainName + '/web';
+    if (navState.url == (domain + '/logout/session')) {
+        this.backToLogin()
+        this.setState({url: ''})
+    } else if (navState.url == (domain + '/login#home')) { 
+      navState.url = domain + '#home'
+    }
   }
 
   backToLogin() {
-    // this.props.navigator.push({
-    //   name: 'Login',
-    //   component: LoginContainer,
-    // });
+    this.props.navigator.push({
+      name: 'Login',
+      component: LoginContainer,
+    });
   }
 
   render() {
