@@ -57,7 +57,7 @@ export default class Login extends Component {
           domainName: this.state.domainName.toLowerCase().trim(),
           username: this.state.username.toLowerCase().trim(),
           password: this.state.password,
-          session_id: this.state.session_id
+          // session_id: this.state.session_id
       });
     })
     .catch((error) => {

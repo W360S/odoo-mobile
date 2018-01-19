@@ -10,7 +10,7 @@ export default class Authentication extends Component {
       domainName: this.props.navigation.state.params.domainName,
       username: this.props.navigation.state.params.username,
       password: this.props.navigation.state.params.password,
-      session_id: this.props.navigation.state.params.session_id
+      // session_id: this.props.navigation.state.params.session_id
     }
   }  
   
@@ -26,7 +26,7 @@ export default class Authentication extends Component {
   }
 
   render() {
-    let jsCode = "document.cookie = 'session_id='" + this.state.session_id + ";"
+    // let jsCode = "document.cookie = 'session_id='" + this.state.session_id + ";"
     return (<WebView
       source={{uri: this.state.url}}
       javaScriptEnabled={true}
