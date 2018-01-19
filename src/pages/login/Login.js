@@ -44,8 +44,12 @@ export default class Login extends Component {
         id: this.state.ranDomId + ""
       })
     })
-    .then((response) => response.json())
+    .then((response) => {
+      console.log(response)
+      response.json()
+    })
     .then((responseJson) => {
+      console.log(responseJson)
       this.setState({
         session_id: responseJson.result.session_id
       });
