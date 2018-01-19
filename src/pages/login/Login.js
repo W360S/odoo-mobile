@@ -25,7 +25,7 @@ export default class Login extends Component {
   }
 
   login = () => {
-    let db = this.state.username.substring(email.lastIndexOf("@") + 1)
+    let db = this.state.username.substring(this.state.username.lastIndexOf("@") + 1)
     fetch('http://' + this.state.domainName + '/web/session/authenticate', {
       method: 'POST',
       headers: {
@@ -57,7 +57,7 @@ export default class Login extends Component {
       });
     })
     .catch((error) => {
-      // console.error(error)
+      console.error(error)
     });
     // if (this.state.domainName === '' || this.state.username === '' || this.state.password === '') {
 
