@@ -11,7 +11,7 @@ export default class Home extends Component {
   }
 
   onNavigationStateChange(navState) { 
-    let domain = 'http://' + this.props.domainName + '/web';
+    let domain = 'http://' + this.props.domainName + '/web'
     if (navState.url == (domain + '/logout/session')) {
         this.backToLogin()
         this.setState({url: ''})

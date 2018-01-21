@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { StyleSheet, View,
+import { StyleSheet, View, Image,
   TextInput,
   WebView,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView, Dimensions,
   ImageBackground } from 'react-native'
 
   import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
@@ -12,7 +12,7 @@ export default class Login extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      domainName: 'w360s.com.vn',
+      domainName: '',
       username: '',
       password: '',
       error: '',
@@ -21,12 +21,19 @@ export default class Login extends Component {
       id: '',
       ranDomId: '',
     }
-    this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
   }
 
   login = () => {
-    let db = this.state.username.substring(this.state.username.lastIndexOf("@") + 1)
-    fetch('http://' + this.state.domainName + '/web/session/authenticate', {
+    // let db = this.state.username.substring(this.state.username.lastIndexOf("@") + 1)
+    let db = ''
+    if (this.state.domainName.indexOf('www') > -1) {
+      db = this.state.domainName.substring(this.state.domainName.indexOf('.') + 1)
+    } else {
+      db = this.state.domainName
+    }
+    this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
+
+    fetch('https://' + this.state.domainName + '/web/session/authenticate', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -41,15 +48,12 @@ export default class Login extends Component {
           password: this.state.password,
           context: {}
         },
-        id: this.state.ranDomId + ""
+        id: this.state.ranDomId
       })
     })
-    .then((response) => {
-      console.log(response)
-      response.json()
-    })
+    .then(response => response.json())
     .then((responseJson) => {
-      console.log(responseJson)
+      // console.log(responseJson)
       this.setState({
         session_id: responseJson.result.session_id
       });
@@ -57,11 +61,11 @@ export default class Login extends Component {
           domainName: this.state.domainName.toLowerCase().trim(),
           username: this.state.username.toLowerCase().trim(),
           password: this.state.password,
-          // session_id: this.state.session_id
+          session_id: this.state.session_id
       });
     })
     .catch((error) => {
-      console.error(error)
+      // console.error(error)
     });
     // if (this.state.domainName === '' || this.state.username === '' || this.state.password === '') {
 
@@ -75,7 +79,7 @@ export default class Login extends Component {
   }
 
   checkDomainName = (domainName) => {
-    fetch('http://' + this.state.domainName + '/web/webclient/version_info', {
+    fetch('https://' + this.state.domainName + '/web/webclient/version_info', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -103,27 +107,31 @@ export default class Login extends Component {
     return (
       <ImageBackground style={styles.wrapper} source={require('../../../images/background-landscape.png')}>
         
-        <Container>
+        <Container style={styles.wrapper}>
+          
             <Content>
-                <Form>
+                <Image source={require('../../../images/w360s-logo.jpg')}
+                    style={styles.imageLogo}
+                  />
+                <Form style={styles.formWrapper}>
                     <Item floatingLabel style={styles.inputTextWrapper}>
                       <Label>Company Domain Name</Label>
-                      <Input autoCapitalize={'none'}
+                      <Input autoCapitalize={'none'} style={styles.inputText}
                           autoCorrect={false}
                           // onBlur={(domainName) => this.checkDomainName(domainName)}
-                          // onChangeText={(domainName) => this.setState({domainName})}
+                          onChangeText={(domainName) => this.setState({domainName})}
                           value={this.state.domainName}/>
                     </Item>
                     <Item floatingLabel style={styles.inputTextWrapper}>
                         <Label>Username</Label>
-                        <Input autoCapitalize={'none'}
+                        <Input autoCapitalize={'none'} style={styles.inputText}
                             autoCorrect={false}
                             onChangeText={(username) => this.setState({username})}
                             value={this.state.username}/>
                     </Item>
                     <Item floatingLabel style={styles.inputTextWrapper}>
                         <Label>Password</Label>
-                        <Input secureTextEntry={true} 
+                        <Input secureTextEntry={true} style={styles.inputText}
                             onChangeText={(password) => this.setState({password})}
                             value={this.state.password}/>
                     </Item>
@@ -193,6 +201,20 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20
   },
+  imageLogo: {
+    
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height/2
+  },
+  contentWrapper: {
+    flex: 1,
+    width: undefined,
+    justifyContent: 'center',
+  },
+  formWrapper: {
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    
+  },
   loginHeader: {
     justifyContent: 'center',
     backgroundColor: "#000000",
@@ -206,7 +228,8 @@ const styles = StyleSheet.create({
   },
   inputText: {
     height: 50,
-    paddingLeft: 10
+    paddingLeft: 10,
+    color: '#FFFFFF'
   },
   errorLabel: {
     color: '#FF0000',
@@ -215,5 +238,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 5,
     marginBottom: 10
+  },
+  buttonContainer: {
+    marginTop: 15,
   }
 });
