@@ -5,102 +5,114 @@ import { StyleSheet, View, Image,
   KeyboardAvoidingView, Dimensions,
   ImageBackground } from 'react-native'
 
-  import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
+import { Constants } from '../../Constants'
 
 export default class Login extends Component {
 
   constructor(props) {
     super(props)
+    const TAG = 'LOGIN'
     this.state = {
       domainName: '',
       username: '',
       password: '',
-      error: '',
+      error: false,
       behavior: 'padding',
       session_id: '',
       id: '',
       ranDomId: '',
+      userNameError: false,
+      passwordError: false,
+      domainNameError: false,
     }
   }
 
   login = () => {
     // let db = this.state.username.substring(this.state.username.lastIndexOf("@") + 1)
-    let db = ''
-    if (this.state.domainName.indexOf('www') > -1) {
-      db = this.state.domainName.substring(this.state.domainName.indexOf('.') + 1)
+    if (this.state.domainNameError || this.state.userNameError || this.state.passwordError) {
+
     } else {
-      db = this.state.domainName
-    }
-    this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
-
-    fetch('https://' + this.state.domainName + '/web/session/authenticate', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "call",
-        params: {
-          db: db,
-          login: this.state.username,
-          password: this.state.password,
-          context: {}
-        },
-        id: this.state.ranDomId
+      let db = ''
+      if (this.state.domainName.indexOf('www') > -1) {
+        db = this.state.domainName.substring(this.state.domainName.indexOf('.') + 1)
+      } else {
+        db = this.state.domainName
+      }
+      this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
+      let url = 'https://' + this.state.domainName + '/web/session/authenticate'
+      fetch(url, {
+        method: 'POST',
+        headers: Constants.headers,
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            db: db,
+            login: this.state.username,
+            password: this.state.password,
+            context: {}
+          },
+          id: this.state.ranDomId
+        })
       })
-    })
-    .then(response => response.json())
-    .then((responseJson) => {
-      // console.log(responseJson)
-      this.setState({
-        session_id: responseJson.result.session_id
+      .then(response => response.json())
+      .then((responseJson) => {
+        // console.log(responseJson)
+        this.setState({
+          session_id: responseJson.result.session_id
+        });
+        this.props.navigation.navigate('Authentication_Page', {
+            domainName: this.state.domainName.toLowerCase().trim(),
+            username: this.state.username.toLowerCase().trim(),
+            password: this.state.password,
+            session_id: this.state.session_id
+        });
+      })
+      .catch((error) => {
+        // console.error(error)
+        this.setState({
+          error: true
+        })
       });
-      this.props.navigation.navigate('Authentication_Page', {
-          domainName: this.state.domainName.toLowerCase().trim(),
-          username: this.state.username.toLowerCase().trim(),
-          password: this.state.password,
-          session_id: this.state.session_id
-      });
-    })
-    .catch((error) => {
-      // console.error(error)
-    });
-    // if (this.state.domainName === '' || this.state.username === '' || this.state.password === '') {
-
-    // } else {
-    //   this.props.navigation.navigate('Authentication_Page', {
-    //     domainName: this.state.domainName.toLowerCase().trim(),
-    //     username: this.state.username.toLowerCase().trim(),
-    //     password: this.state.password
-    //   });
-    // }
+    }
   }
 
   checkDomainName = (domainName) => {
-    fetch('https://' + this.state.domainName + '/web/webclient/version_info', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "call",
-        params: {
-          context: {}
-        },
-        id: this.state.ranDomId + ""
+    
+    if (domainName !== '') {
+      let url = 'https://' + this.state.domainName + '/web/webclient/version_info'
+      fetch(url, {
+        method: 'POST',
+        headers: Constants.headers,
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            context: {}
+          },
+          id: this.state.ranDomId + ""
+        })
       })
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-
-    })
-    .catch((error) => {
-
-    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          domainNameError: false,
+          error: false
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          domainNameError: true,
+          error: true
+        })
+      })
+    } else {
+      this.setState({
+        domainNameError: true,
+        error: true
+      })
+    }
   }
 
   render() {
@@ -109,32 +121,34 @@ export default class Login extends Component {
         
         <Container style={styles.wrapper}>
           
-            <Content>
+            <Content style={styles.container}>
                 <Image source={require('../../../images/w360s-logo.jpg')}
                     style={styles.imageLogo}
+                    resizeMode='contain'
                   />
                 <Form style={styles.formWrapper}>
-                    <Item floatingLabel style={styles.inputTextWrapper}>
+                    <Item floatingLabel error={this.state.domainNameError} style={styles.inputTextWrapper}>
                       <Label>Company Domain Name</Label>
                       <Input autoCapitalize={'none'} style={styles.inputText}
                           autoCorrect={false}
-                          // onBlur={(domainName) => this.checkDomainName(domainName)}
+                          onBlur={(domainName) => this.checkDomainName(domainName)}
                           onChangeText={(domainName) => this.setState({domainName})}
                           value={this.state.domainName}/>
                     </Item>
-                    <Item floatingLabel style={styles.inputTextWrapper}>
+                    <Item floatingLabel error={this.state.userNameError} style={styles.inputTextWrapper}>
                         <Label>Username</Label>
                         <Input autoCapitalize={'none'} style={styles.inputText}
                             autoCorrect={false}
                             onChangeText={(username) => this.setState({username})}
                             value={this.state.username}/>
                     </Item>
-                    <Item floatingLabel style={styles.inputTextWrapper}>
+                    <Item floatingLabel error={this.state.passwordError} style={styles.inputTextWrapper}>
                         <Label>Password</Label>
                         <Input secureTextEntry={true} style={styles.inputText}
                             onChangeText={(password) => this.setState({password})}
                             value={this.state.password}/>
                     </Item>
+                    {this.state.error && <Text style={styles.errorLabel}>Please check your login info</Text>}
                     <Button full primary style={styles.buttonContainer}
                         onPress={() => this.login()}>
                         <Text>LOGIN</Text>
@@ -142,50 +156,6 @@ export default class Login extends Component {
                 </Form>
             </Content>
         </Container>
-
-        {/* <KeyboardAvoidingView behavior={this.state.behavior} style={styles.container}>
-          <View
-            style={{
-              marginTop: 40,
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              marginLeft: 20,
-              marginRight: 20
-            }}>
-            <View style={styles.loginHeader}>
-              <Text style={styles.loginHeaderLabel}>WCLOUD APPLICATION</Text>
-            </View>
-
-            <TextInput
-              style={styles.inputText}
-              autoCapitalize={'none'}
-              autoCorrect={false}
-              placeholder="Company Domain Name"
-              onChangeText={(domainName) => this.setState({domainName})}
-              value={this.state.domainName}/>
-            <TextInput
-              style={styles.inputText}
-              autoCapitalize={'none'}
-              autoCorrect={false}
-              placeholder="Username"
-              onChangeText={(username) => this.setState({username})}
-              value={this.state.username}/>
-            <TextInput
-              style={styles.inputText}
-              secureTextEntry={true}
-              placeholder="Password"
-              onChangeText={(password) => this.setState({password})}
-              value={this.state.password}/>
-            <Text style={styles.errorLabel}>{this.state.error}</Text>
-            <Button
-              style={{
-              marginTop: 10,
-              marginBottom: 10
-            }}
-              title="Login"
-              onPress={() => this.login()}/>
-          </View>
-        </KeyboardAvoidingView> */}
-      
       </ImageBackground>
     );
   }
@@ -199,12 +169,11 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   container: {
-    paddingHorizontal: 20
+    marginLeft: 10,
+    marginRight: 10
   },
   imageLogo: {
-    
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height/2
+    width: Dimensions.get('window').width - 20,
   },
   contentWrapper: {
     flex: 1,
@@ -213,7 +182,7 @@ const styles = StyleSheet.create({
   },
   formWrapper: {
     backgroundColor: "rgba(255, 255, 255, 0.5)",
-    
+    margin: 10,
   },
   loginHeader: {
     justifyContent: 'center',
@@ -233,11 +202,11 @@ const styles = StyleSheet.create({
   },
   errorLabel: {
     color: '#FF0000',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
-    marginTop: 5,
-    marginBottom: 10
+    marginTop: 15,
+    marginBottom: 5
   },
   buttonContainer: {
     marginTop: 15,
