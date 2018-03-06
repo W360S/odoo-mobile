@@ -9,8 +9,6 @@ export default class Authentication extends Component {
     this.state = {
       url: 'http://' + this.props.navigation.state.params.domainName + '/web#login',
       domainName: this.props.navigation.state.params.domainName,
-      username: this.props.navigation.state.params.username,
-      password: this.props.navigation.state.params.password,
       session_id: this.props.navigation.state.params.session_id
     }
   }  
