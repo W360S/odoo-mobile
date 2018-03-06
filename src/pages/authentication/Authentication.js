@@ -11,7 +11,8 @@ export default class Authentication extends Component {
       url: 'about:blank',
       // url: 'http://' + this.props.navigation.state.params.domainName + '/web#login',
       domainName: '',
-      session_id: ''
+      session_id: '',
+      domainNameError: false,
     }
   }  
   
@@ -37,6 +38,43 @@ export default class Authentication extends Component {
       name: 'Login',
       component: LoginContainer,
     });
+  }
+
+  checkDomainName = (domainName) => {
+    
+    if (domainName !== '') {
+      let url = 'https://' + this.state.domainName + '/web/webclient/version_info'
+      fetch(url, {
+        method: 'POST',
+        headers: Constants.headers,
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            context: {}
+          },
+          id: this.state.ranDomId + ""
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          domainNameError: false,
+          error: false
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          domainNameError: true,
+          error: true
+        })
+      })
+    } else {
+      this.setState({
+        domainNameError: true,
+        error: true
+      })
+    }
   }
 
   render() {
@@ -76,5 +114,18 @@ const styles = StyleSheet.create({
     width: 0,
     height: 0,
     marginTop: 20
-  }
+  },
+  inputText: {
+    height: 50,
+    paddingLeft: 10,
+    color: '#FFFFFF'
+  },
+  errorLabel: {
+    color: '#FF0000',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 5
+  },
 });
