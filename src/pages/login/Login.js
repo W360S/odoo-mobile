@@ -30,7 +30,7 @@ export default class Login extends Component {
 
   login = () => {
     // let db = this.state.username.substring(this.state.username.lastIndexOf("@") + 1)
-    if (this.state.domainNameError || this.state.userNameError || this.state.passwordError) {
+    if (this.state.userNameError || this.state.passwordError) {
 
     } else {
       let db = ''
@@ -127,14 +127,6 @@ export default class Login extends Component {
                     resizeMode='contain'
                   />
                 <Form style={styles.formWrapper}>
-                    <Item floatingLabel error={this.state.domainNameError} style={styles.inputTextWrapper}>
-                      <Label>Company Domain Name</Label>
-                      <Input autoCapitalize={'none'} style={styles.inputText}
-                          autoCorrect={false}
-                          onBlur={(domainName) => this.checkDomainName(domainName)}
-                          onChangeText={(domainName) => this.setState({domainName})}
-                          value={this.state.domainName}/>
-                    </Item>
                     <Item floatingLabel error={this.state.userNameError} style={styles.inputTextWrapper}>
                         <Label>Username</Label>
                         <Input autoCapitalize={'none'} style={styles.inputText}

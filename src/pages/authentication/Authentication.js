@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, WebView } from 'react-native'
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 
 export default class Authentication extends Component {
 
@@ -7,9 +8,11 @@ export default class Authentication extends Component {
     super(props)
     const TAG = 'AUTHENTICATION'
     this.state = {
-      url: 'http://' + this.props.navigation.state.params.domainName + '/web#login',
-      domainName: this.props.navigation.state.params.domainName,
-      session_id: this.props.navigation.state.params.session_id
+      url: 'about:blank',
+      // url: 'http://' + this.props.navigation.state.params.domainName + '/web#login',
+      domainName: '',
+      session_id: '',
+      domainNameError: false,
     }
   }  
   
@@ -37,23 +40,92 @@ export default class Authentication extends Component {
     });
   }
 
+  checkDomainName = (domainName) => {
+    
+    if (domainName !== '') {
+      let url = 'https://' + this.state.domainName + '/web/webclient/version_info'
+      fetch(url, {
+        method: 'POST',
+        headers: Constants.headers,
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            context: {}
+          },
+          id: this.state.ranDomId + ""
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          domainNameError: false,
+          error: false
+        })
+      })
+      .catch((error) => {
+        this.setState({
+          domainNameError: true,
+          error: true
+        })
+      })
+    } else {
+      this.setState({
+        domainNameError: true,
+        error: true
+      })
+    }
+  }
+
   render() {
     let jsCode = `document.cookie = 'session_id='` + this.state.session_id + `";`
     return (
       <View>
+        <Content style={styles.container}>
+          <Image source={require('../../../images/w360s-logo.jpg')}
+              style={styles.imageLogo}
+              resizeMode='contain'
+            />
+          <Form style={styles.formWrapper}>
+              <Item floatingLabel error={this.state.domainNameError} style={styles.inputTextWrapper}>
+                <Label>Company Domain Name</Label>
+                <Input autoCapitalize={'none'} style={styles.inputText}
+                    autoCorrect={false}
+                    onBlur={(domainName) => this.checkDomainName(domainName)}
+                    onChangeText={(domainName) => this.setState({domainName})}
+                    value={this.state.domainName}/>
+              </Item>
+          </Form>
+        </Content>
         <WebView
           source={{uri: this.state.url}}
           javaScriptEnabled={true}
           injectedJavaScript={jsCode}
           onNavigationStateChange={ this.onNavigationStateChange.bind(this) }
           startInLoadingState={true}
-          style={{
-            marginTop: 20
-          }}/>
+          style={styles.hiddenWebView}/>
       </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  hiddenWebView: {
+    width: 0,
+    height: 0,
+    marginTop: 20
+  },
+  inputText: {
+    height: 50,
+    paddingLeft: 10,
+    color: '#FFFFFF'
+  },
+  errorLabel: {
+    color: '#FF0000',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 5
+  },
 });
