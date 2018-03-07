@@ -62,7 +62,7 @@ export default class Login extends Component {
         this.setState({
           session_id: responseJson.result.session_id
         });
-        this.props.navigation.navigate('Authentication_Page', {
+        this.props.navigation.navigate('Home_Page', {
             domainName: this.state.domainName.toLowerCase().trim(),
             username: this.state.username.toLowerCase().trim(),
             password: this.state.password,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   container: {
     marginLeft: 10,
-    marginRight: 10
+    marginRight: 15
   },
   imageLogo: {
     width: Dimensions.get('window').width - 20,

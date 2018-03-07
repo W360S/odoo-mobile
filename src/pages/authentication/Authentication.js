@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, WebView } from 'react-native'
+import { StyleSheet, View, WebView, Image, Dimensions } from 'react-native'
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
+import { Constants } from '../../Constants'
 
 export default class Authentication extends Component {
 
@@ -8,41 +9,15 @@ export default class Authentication extends Component {
     super(props)
     const TAG = 'AUTHENTICATION'
     this.state = {
-      url: 'about:blank',
-      // url: 'http://' + this.props.navigation.state.params.domainName + '/web#login',
       domainName: '',
       session_id: '',
       domainNameError: false,
     }
-  }  
-  
-  onNavigationStateChange(navState) { 
-    // console.log(this.TAG, navState.url)
-    // let domain = 'http://' + this.props.navigation.state.params.domainName + '/web#home'
-    // let domain = 'http://' + this.props.domainName + '/web';
-    let tempUrl = navState.url + ''
-
-    // if (navState.url === domain) {
-        
-    // }
-
-    if (tempUrl.indexOf('logout') > -1) {
-      this.setState({url: 'about:blank'})
-      // this.backToLogin()
-      this.props.navigation.goBack()
-    }
-  }
-
-  backToLogin() {
-    this.props.navigator.push({
-      name: 'Login',
-      component: LoginContainer,
-    });
   }
 
   checkDomainName = (domainName) => {
-    
     if (domainName !== '') {
+      this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
       let url = 'https://' + this.state.domainName + '/web/webclient/version_info'
       fetch(url, {
         method: 'POST',
@@ -62,6 +37,9 @@ export default class Authentication extends Component {
           domainNameError: false,
           error: false
         })
+        this.props.navigation.navigate('Login_Page', {
+          domainName: this.state.domainName.toLowerCase().trim()
+        });
       })
       .catch((error) => {
         this.setState({
@@ -78,47 +56,61 @@ export default class Authentication extends Component {
   }
 
   render() {
-    let jsCode = `document.cookie = 'session_id='` + this.state.session_id + `";`
     return (
-      <View>
+      <View style={styles.wrapper}>
+        <Image source={require('../../../images/logo.png')}
+          style={styles.imageLogo}
+          resizeMode='contain'/>
         <Content style={styles.container}>
-          <Image source={require('../../../images/w360s-logo.jpg')}
-              style={styles.imageLogo}
-              resizeMode='contain'
-            />
           <Form style={styles.formWrapper}>
-              <Item floatingLabel error={this.state.domainNameError} style={styles.inputTextWrapper}>
-                <Label>Company Domain Name</Label>
+              <Item error={this.state.domainNameError} style={styles.inputTextWrapper}>
                 <Input autoCapitalize={'none'} style={styles.inputText}
                     autoCorrect={false}
                     onBlur={(domainName) => this.checkDomainName(domainName)}
                     onChangeText={(domainName) => this.setState({domainName})}
-                    value={this.state.domainName}/>
+                    value={this.state.domainName}
+                    placeholder='Enter your company domain'
+                    blurOnSubmit={true}/>
               </Item>
+              {this.state.domainNameError && <Text style={styles.errorLabel}>Please check your company domain</Text>}
           </Form>
         </Content>
-        <WebView
-          source={{uri: this.state.url}}
-          javaScriptEnabled={true}
-          injectedJavaScript={jsCode}
-          onNavigationStateChange={ this.onNavigationStateChange.bind(this) }
-          startInLoadingState={true}
-          style={styles.hiddenWebView}/>
       </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  hiddenWebView: {
-    width: 0,
-    height: 0,
-    marginTop: 20
+  wrapper: {
+    flex: 1,
+    width: undefined,
+    justifyContent: 'center',
+    marginTop: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF'
+  },
+  container: {
+    width: Dimensions.get('window').width,
+    
+    marginRight: 15,
+  },
+  formWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: Dimensions.get('window').width,
+  },
+  imageLogo: {
+    width: Dimensions.get('window').width/2,
+    alignSelf: 'center',
   },
   inputText: {
-    height: 50,
-    paddingLeft: 10,
-    color: '#FFFFFF'
+    height: 40,
+    color: '#000000',
+    backgroundColor: '#ebebeb',
+    textAlign: 'center',
+    alignSelf: 'center',
   },
   errorLabel: {
     color: '#FF0000',
