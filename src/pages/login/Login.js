@@ -14,7 +14,7 @@ export default class Login extends Component {
     super(props)
     const TAG = 'LOGIN'
     this.state = {
-      domainName: '',
+      domainName: this.props.domainName,
       username: '',
       password: '',
       error: false,
@@ -78,46 +78,9 @@ export default class Login extends Component {
     }
   }
 
-  checkDomainName = (domainName) => {
-    
-    if (domainName !== '') {
-      let url = 'https://' + this.state.domainName + '/web/webclient/version_info'
-      fetch(url, {
-        method: 'POST',
-        headers: Constants.headers,
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          method: "call",
-          params: {
-            context: {}
-          },
-          id: this.state.ranDomId + ""
-        })
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          domainNameError: false,
-          error: false
-        })
-      })
-      .catch((error) => {
-        this.setState({
-          domainNameError: true,
-          error: true
-        })
-      })
-    } else {
-      this.setState({
-        domainNameError: true,
-        error: true
-      })
-    }
-  }
-
   render() {
     return (
-      <ImageBackground style={styles.wrapper} source={require('../../../images/background-landscape.png')}>
+      <View style={styles.wrapper}>
         
         <Container style={styles.wrapper}>
           
@@ -127,6 +90,7 @@ export default class Login extends Component {
                     resizeMode='contain'
                   />
                 <Form style={styles.formWrapper}>
+                    <Text>{state.domainName}</Text>
                     <Item floatingLabel error={this.state.userNameError} style={styles.inputTextWrapper}>
                         <Label>Username</Label>
                         <Input autoCapitalize={'none'} style={styles.inputText}
@@ -148,7 +112,7 @@ export default class Login extends Component {
                 </Form>
             </Content>
         </Container>
-      </ImageBackground>
+      </View>
     );
   }
 }
@@ -158,14 +122,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: undefined,
     justifyContent: 'center',
-    marginTop: 20
+    marginTop: 20,
+    backgroundColor: '#FFFFFF'
   },
   container: {
     marginLeft: 10,
     marginRight: 15
   },
   imageLogo: {
-    width: Dimensions.get('window').width - 20,
+    width: Dimensions.get('window').width/2,
+    alignSelf: 'center',
   },
   contentWrapper: {
     flex: 1,
@@ -173,7 +139,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   formWrapper: {
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
     margin: 10,
   },
   loginHeader: {
@@ -189,8 +154,8 @@ const styles = StyleSheet.create({
   },
   inputText: {
     height: 50,
-    paddingLeft: 10,
-    color: '#FFFFFF'
+    paddingLeft: 0,
+    color: '#000000'
   },
   errorLabel: {
     color: '#FF0000',
