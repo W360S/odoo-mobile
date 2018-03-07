@@ -18,7 +18,7 @@ export default class Authentication extends Component {
   checkDomainName = (domainName) => {
     if (domainName !== '') {
       this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
-      let url = 'https://' + this.state.domainName + '/web/webclient/version_info'
+      let url = 'http://' + this.state.domainName + '/web/webclient/version_info'
       fetch(url, {
         method: 'POST',
         headers: Constants.headers,
