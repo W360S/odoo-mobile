@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, WebView, Image, Dimensions, Keyboard } from 'react-native'
+import { StyleSheet, View, WebView, Image, Dimensions, Keyboard, Platform } from 'react-native'
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Constants } from '../../Constants'
@@ -99,7 +99,7 @@ export default class Authentication extends Component {
                 <Icon name="chevron-right" style={styles.nextBtn} 
                   onPress={(domainName) => this.checkDomainName(domainName)} />
               </Item>
-              {this.state.domainNameError && <Text style={styles.errorLabel}>Please check your company domain</Text>}
+              {this.state.domainNameError && <Text style={styles.errorLabel}>Your company domain not valid or you do not have wlcoud account yet. Please contact support for assistant</Text>}
           </Form>
         </Content>
       </View>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: undefined,
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: Platform.OS === 'ios' ? 20 : 0,
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#FFFFFF'
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     marginTop: 15,
-    marginBottom: 5
+    marginBottom: 5,
+    width: Dimensions.get('window').width - 10,
   },
 });

@@ -4,7 +4,7 @@ import { StyleSheet, View, Image,
   WebView,
   KeyboardAvoidingView, Dimensions,
   ImageBackground,
-  Keyboard } from 'react-native'
+  Keyboard, Platform } from 'react-native'
 
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 import { Constants } from '../../Constants'
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: undefined,
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: Platform.OS === 'ios' ? 20 : 0,
     backgroundColor: '#FFFFFF'
   },
   container: {

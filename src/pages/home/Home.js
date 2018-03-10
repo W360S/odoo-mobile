@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, WebView } from 'react-native'
+import { StyleSheet, Text, View, WebView, Platform } from 'react-native'
 
 export default class Home extends Component {
 
@@ -33,7 +33,7 @@ export default class Home extends Component {
       onNavigationStateChange={ this.onNavigationStateChange.bind(this) }
       startInLoadingState={true}
       style={{
-        marginTop: 0
+        marginTop: Platform.OS === 'ios' ? 20 : 0
     }}/>)
   }
 }
