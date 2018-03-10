@@ -3,7 +3,8 @@ import { StyleSheet, View, Image,
   TextInput,
   WebView,
   KeyboardAvoidingView, Dimensions,
-  ImageBackground } from 'react-native'
+  ImageBackground,
+  Keyboard } from 'react-native'
 
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 import { Constants } from '../../Constants'
@@ -14,7 +15,7 @@ export default class Login extends Component {
     super(props)
     const TAG = 'LOGIN'
     this.state = {
-      domainName: this.props.domainName,
+      domainName: this.props.navigation.state.params.domainName,
       username: '',
       password: '',
       error: false,
@@ -28,7 +29,29 @@ export default class Login extends Component {
     }
   }
 
+  componentWillMount () {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow () {
+    // alert('Keyboard Shown');
+  }
+
+  _keyboardDidHide () {
+    // alert('Keyboard Hidden');
+  }
+
   login = () => {
+    Keyboard.dismiss()
+    this.setState({
+      error: false
+    })
     // let db = this.state.username.substring(this.state.username.lastIndexOf("@") + 1)
     if (this.state.userNameError || this.state.passwordError) {
 
@@ -40,10 +63,13 @@ export default class Login extends Component {
         db = this.state.domainName
       }
       this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
-      let url = 'https://' + this.state.domainName + '/web/session/authenticate'
+      let url = 'http://' + this.state.domainName + '/web/session/authenticate'
       fetch(url, {
         method: 'POST',
-        headers: Constants.headers,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           jsonrpc: "2.0",
           method: "call",
@@ -59,6 +85,12 @@ export default class Login extends Component {
       .then(response => response.json())
       .then((responseJson) => {
         // console.log(responseJson)
+        if (responseJson.error) {
+          this.setState({
+            error: true
+          })
+          return;
+        }
         this.setState({
           session_id: responseJson.result.session_id
         });
@@ -90,25 +122,24 @@ export default class Login extends Component {
                     resizeMode='contain'
                   />
                 <Form style={styles.formWrapper}>
-                    <Text>{state.domainName}</Text>
-                    <Item floatingLabel error={this.state.userNameError} style={styles.inputTextWrapper}>
-                        <Label>Username</Label>
-                        <Input autoCapitalize={'none'} style={styles.inputText}
-                            autoCorrect={false}
-                            onChangeText={(username) => this.setState({username})}
-                            value={this.state.username}/>
-                    </Item>
-                    <Item floatingLabel error={this.state.passwordError} style={styles.inputTextWrapper}>
-                        <Label>Password</Label>
-                        <Input secureTextEntry={true} style={styles.inputText}
-                            onChangeText={(password) => this.setState({password})}
-                            value={this.state.password}/>
-                    </Item>
-                    {this.state.error && <Text style={styles.errorLabel}>Please check your login info</Text>}
-                    <Button full primary style={styles.buttonContainer}
-                        onPress={() => this.login()}>
-                        <Text>LOGIN</Text>
-                    </Button>
+                  <Item floatingLabel error={this.state.userNameError} style={styles.inputTextWrapper}>
+                      <Label>Username</Label>
+                      <Input autoCapitalize={'none'} style={styles.inputText}
+                          autoCorrect={false}
+                          onChangeText={(username) => this.setState({username})}
+                          value={this.state.username}/>
+                  </Item>
+                  <Item floatingLabel error={this.state.passwordError} style={styles.inputTextWrapper}>
+                      <Label>Password</Label>
+                      <Input secureTextEntry={true} style={styles.inputText}
+                          onChangeText={(password) => this.setState({password})}
+                          value={this.state.password}/>
+                  </Item>
+                  {this.state.error && <Text style={styles.errorLabel}>Please check your login info</Text>}
+                  <Button full primary style={styles.buttonContainer}
+                      onPress={() => this.login()}>
+                      <Text>LOGIN</Text>
+                  </Button>
                 </Form>
             </Content>
         </Container>

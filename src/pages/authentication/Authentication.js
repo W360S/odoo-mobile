@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, WebView, Image, Dimensions } from 'react-native'
+import { StyleSheet, View, WebView, Image, Dimensions, Keyboard } from 'react-native'
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import { Constants } from '../../Constants'
 
 export default class Authentication extends Component {
@@ -15,13 +16,39 @@ export default class Authentication extends Component {
     }
   }
 
+  componentWillMount () {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow () {
+    // alert('Keyboard Shown');
+  }
+
+  _keyboardDidHide () {
+    // alert('Keyboard Hidden');
+  }
+
   checkDomainName = (domainName) => {
+    Keyboard.dismiss()
     if (domainName !== '') {
-      this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
+      this.setState({
+        ranDomId: Math.floor(Math.random() * 1000) + 1,
+        domainNameError: false,
+        error: false,
+      })
       let url = 'http://' + this.state.domainName + '/web/webclient/version_info'
       fetch(url, {
         method: 'POST',
-        headers: Constants.headers,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           jsonrpc: "2.0",
           method: "call",
@@ -66,11 +93,11 @@ export default class Authentication extends Component {
               <Item error={this.state.domainNameError} style={styles.inputTextWrapper}>
                 <Input autoCapitalize={'none'} style={styles.inputText}
                     autoCorrect={false}
-                    onBlur={(domainName) => this.checkDomainName(domainName)}
                     onChangeText={(domainName) => this.setState({domainName})}
                     value={this.state.domainName}
-                    placeholder='Enter your company domain'
-                    blurOnSubmit={true}/>
+                    placeholder='Enter your company domain'/>
+                <Icon name="chevron-right" style={styles.nextBtn} 
+                  onPress={(domainName) => this.checkDomainName(domainName)} />
               </Item>
               {this.state.domainNameError && <Text style={styles.errorLabel}>Please check your company domain</Text>}
           </Form>
@@ -111,6 +138,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ebebeb',
     textAlign: 'center',
     alignSelf: 'center',
+  },
+  nextBtn: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: "300",
+    position: 'absolute',
+    right: 0,
+    marginRight: 10,
   },
   errorLabel: {
     color: '#FF0000',

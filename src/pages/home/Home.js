@@ -1,20 +1,20 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, WebView } from 'react-native'
 
 export default class Home extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      url: 'http://' + this.props.domainName + '/web#home'
+      url: 'http://' + this.props.navigation.state.params.domainName + '/web#home'
     }
   }
 
   onNavigationStateChange(navState) { 
-    let domain = 'http://' + this.props.domainName + '/web'
-    if (navState.url == (domain + '/logout/session')) {
+    let domain = 'http://' + this.props.navigation.state.params.domainName + '/web'
+    if (navState.url.indexOf('logout') > -1) {
         this.backToLogin()
-        this.setState({url: ''})
+        this.setState({url: 'about:blank'})
     } else if (navState.url == (domain + '/login#home')) { 
       navState.url = domain + '#home'
     }
