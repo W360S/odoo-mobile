@@ -136,7 +136,7 @@ export default class Login extends Component {
                           value={this.state.password}/>
                   </Item>
                   {this.state.error && <Text style={styles.errorLabel}>Please check your login info</Text>}
-                  <Button full primary style={styles.buttonContainer}
+                  <Button full success style={styles.buttonContainer}
                       onPress={() => this.login()}>
                       <Text>LOGIN</Text>
                   </Button>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   formWrapper: {
-    margin: 10,
+    margin: 0,
   },
   loginHeader: {
     justifyContent: 'center',
@@ -198,5 +198,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 15,
+    marginLeft: 10,
   }
 });

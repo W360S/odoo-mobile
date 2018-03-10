@@ -85,23 +85,26 @@ export default class Authentication extends Component {
   render() {
     return (
       <View style={styles.wrapper}>
-        <Image source={require('../../../images/logo.png')}
-          style={styles.imageLogo}
-          resizeMode='contain'/>
-        <Content style={styles.container}>
+        <View style={styles.wrapperContainer}>
+          <Image source={require('../../../images/logo.png')}
+            style={styles.imageLogo}
+            resizeMode='contain'/>
+          
           <Form style={styles.formWrapper}>
               <Item error={this.state.domainNameError} style={styles.inputTextWrapper}>
                 <Input autoCapitalize={'none'} style={styles.inputText}
                     autoCorrect={false}
                     onChangeText={(domainName) => this.setState({domainName})}
                     value={this.state.domainName}
-                    placeholder='Enter your company domain'/>
+                    placeholder='Enter your company domain'
+                    onSubmitEditing={(domainName) => this.checkDomainName(domainName)}/>
                 <Icon name="chevron-right" style={styles.nextBtn} 
                   onPress={(domainName) => this.checkDomainName(domainName)} />
               </Item>
               {this.state.domainNameError && <Text style={styles.errorLabel}>Your company domain not valid or you do not have wlcoud account yet. Please contact support for assistant</Text>}
           </Form>
-        </Content>
+          
+        </View>
       </View>
     )
   }
@@ -110,20 +113,19 @@ export default class Authentication extends Component {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    width: undefined,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
     justifyContent: 'center',
     marginTop: Platform.OS === 'ios' ? 20 : 0,
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#FFFFFF'
   },
-  container: {
-    width: Dimensions.get('window').width,
-    
-    marginRight: 15,
+  wrapperContainer: {
+    // backgroundColor: '#FF0000',
+    height: Dimensions.get('window').height/2,
   },
   formWrapper: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     width: Dimensions.get('window').width,
@@ -132,12 +134,14 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width/2,
     alignSelf: 'center',
   },
+  inputTextWrapper: {
+    marginRight: 15,
+  },
   inputText: {
     height: 40,
     color: '#000000',
     backgroundColor: '#ebebeb',
     textAlign: 'center',
-    alignSelf: 'center',
   },
   nextBtn: {
     color: 'black',
