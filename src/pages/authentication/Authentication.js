@@ -124,7 +124,7 @@ export default class Authentication extends Component {
                 <Icon name="chevron-right" style={styles.nextBtn} 
                   onPress={(domainName) => this.checkDomainName(domainName)} />
               </Item>
-              {this.state.domainNameError && <Text style={styles.errorLabel}>Your company domain not valid or you do not have wlcoud account yet. Please contact support for assistant</Text>}
+              {this.state.domainNameError && <Text style={styles.errorLabel}>Your company domain not valid or you do not have wcloud account yet. Please contact support for assistant</Text>}
           </Form>
           
         </View>
