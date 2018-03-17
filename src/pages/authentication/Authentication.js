@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, WebView, Image, Dimensions, Keyboard, Platform } from 'react-native'
+import { StyleSheet, View, WebView, Image, Dimensions, Keyboard, Platform, AsyncStorage } from 'react-native'
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Constants } from '../../Constants'
@@ -26,6 +26,16 @@ export default class Authentication extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  componentDidMount () {
+    AsyncStorage.getItem('company_domain').then(value => {
+      if (value !== undefined) {
+        this.setState({
+          domainName: value,
+        })
+      }
+    })
+  }
+
   _keyboardDidShow () {
     // alert('Keyboard Shown');
   }
@@ -42,7 +52,12 @@ export default class Authentication extends Component {
         domainNameError: false,
         error: false,
       })
-      let url = 'http://' + this.state.domainName + '/web/webclient/version_info'
+      let url = ''
+      if (this.state.domainName === 'wcloud.vn') {
+        url = 'https://' + this.state.domainName + '/web/webclient/version_info'
+      } else {
+        url = 'http://' + this.state.domainName + '/web/webclient/version_info'
+      }
       fetch(url, {
         method: 'POST',
         headers: {
@@ -60,10 +75,18 @@ export default class Authentication extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
+        if (responseJson.error) {
+          this.setState({
+            domainNameError: true,
+            error: true
+          })
+          return;
+        }
         this.setState({
           domainNameError: false,
           error: false
         })
+        AsyncStorage.setItem('company_domain', this.state.domainName.toLowerCase().trim())
         this.props.navigation.navigate('Login_Page', {
           domainName: this.state.domainName.toLowerCase().trim()
         });

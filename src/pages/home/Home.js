@@ -21,10 +21,7 @@ export default class Home extends Component {
   }
 
   backToLogin() {
-    this.props.navigator.push({
-      name: 'Login',
-      component: LoginContainer,
-    });
+    this.props.navigation.navigate('Authentication_Page', {});
   }
 
   render() {

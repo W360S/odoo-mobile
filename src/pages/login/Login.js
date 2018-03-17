@@ -4,7 +4,7 @@ import { StyleSheet, View, Image,
   WebView,
   KeyboardAvoidingView, Dimensions,
   ImageBackground,
-  Keyboard, Platform } from 'react-native'
+  Keyboard, Platform, AsyncStorage } from 'react-native'
 
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text } from 'native-base'
 import { Constants } from '../../Constants'
@@ -39,6 +39,24 @@ export default class Login extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  componentDidMount () {
+    AsyncStorage.getItem('username').then(value => {
+      if (value !== undefined) {
+        this.setState({
+          username: value,
+        })
+      }
+    })
+
+    AsyncStorage.getItem('password').then(value => {
+      if (value !== undefined) {
+        this.setState({
+          password: value,
+        })
+      }
+    })
+  }
+
   _keyboardDidShow () {
     // alert('Keyboard Shown');
   }
@@ -63,7 +81,14 @@ export default class Login extends Component {
         db = this.state.domainName
       }
       this.setState({ranDomId: Math.floor(Math.random() * 1000) + 1})
-      let url = 'http://' + this.state.domainName + '/web/session/authenticate'
+
+      let url = ''
+      if (this.state.domainName === 'wcloud.vn') {
+        url = 'https://' + this.state.domainName + '/web/session/authenticate'
+      } else {
+        url = 'http://' + this.state.domainName + '/web/session/authenticate'
+      }
+
       fetch(url, {
         method: 'POST',
         headers: {
@@ -94,6 +119,8 @@ export default class Login extends Component {
         this.setState({
           session_id: responseJson.result.session_id
         });
+        AsyncStorage.setItem('username', this.state.username.toLowerCase().trim())
+        AsyncStorage.setItem('password', this.state.password)
         this.props.navigation.navigate('Home_Page', {
             domainName: this.state.domainName.toLowerCase().trim(),
             username: this.state.username.toLowerCase().trim(),
