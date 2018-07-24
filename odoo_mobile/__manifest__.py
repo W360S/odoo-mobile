@@ -13,7 +13,7 @@
     'maintainer': "World 360° Services",
     'website': 'https://www.saastools.xyz',
     'images': ['static/description/banner.png'],
-    "depends" : ["base"],
+    "depends" : ["base, web_responsive"],
     "auto_install": False,
     "application": False,
     "installable": True,
