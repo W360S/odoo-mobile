@@ -4,7 +4,7 @@
     'license': 'LGPL-3',
     "name" : "Odoo Mobile App buider",
     "version" : "1.0",
-    "author" : "W360S",
+    "author" : "saas tools",
     'price': 299.90,
     'currency': 'EUR',
     "category" : "Sales",
