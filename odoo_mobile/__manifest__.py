@@ -14,7 +14,6 @@
     'website': 'https://www.saastools.xyz',
     'images': ['static/description/banner.png'],
     "depends" : ['base', 
-                 'web_responsive',
                 ],
     "auto_install": False,
     "application": False,
